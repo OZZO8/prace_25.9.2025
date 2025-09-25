@@ -18,7 +18,7 @@ def addVybaveni():
 
 def vypisVybaveni(seznam):
     for i in range(len(seznam)):
-        print(f"id: {i}\n    název: {seznam[i]["name"]}\n    kategorie: {seznam[i]["category"]}\n    cena za den: {seznam[i]["pricePerDay"]}\n    pujceno: {seznam[i]["pujceno"]}\n    pocet půjčení: {seznam[i]["pujceniPocet"]}")
+        print(f"id: {i}\n    název: {seznam[i]["name"]}\n    kategorie: {seznam[i]["category"]}\n    cena za den: {seznam[i]["pricePerDay"]}\n    půjčeno: {seznam[i]["pujceno"]}\n    počet půjčení: {seznam[i]["pujceniPocet"]}")
 
 def addZakaznik():
     name = input("Jméno = ")
@@ -50,10 +50,13 @@ def pujceniVybaveni(seznamVybaveni, seznamZakazniku):
             vybaveniId = int(vybaveniIdStr)
             if (vybaveniId < len(seznamVybaveni)):
                 break
-    seznamVybaveni[vybaveniId]["pujceniPocet"] += 1
-    seznamVybaveni[vybaveniId]["pujceno"] = True
-    seznamZakazniku[zakaznikId]["pujceno"].append(vybaveniId)
-    print(f"cena za den = {seznamVybaveni[vybaveniId]["pricePerDay"]}")
+    if not (seznamVybaveni[vybaveniId]["pujceno"]):
+        seznamVybaveni[vybaveniId]["pujceniPocet"] += 1
+        seznamVybaveni[vybaveniId]["pujceno"] = True
+        seznamZakazniku[zakaznikId]["pujceno"].append(vybaveniId)
+        print(f"cena za den = {seznamVybaveni[vybaveniId]["pricePerDay"]}")
+    else:
+        print("Už je půjčeno")
 
 def vraceniVybaveni(seznamVybaveni, seznamZakazniku):
     while 1:
@@ -71,7 +74,10 @@ def vraceniVybaveni(seznamVybaveni, seznamZakazniku):
             if (vybaveniId < len(seznamVybaveni)):
                 break
     seznamVybaveni[vybaveniId]["pujceno"] = False
-    seznamZakazniku[zakaznikId]["pujceno"].remove(vybaveniId)
+    try:
+        seznamZakazniku[zakaznikId]["pujceno"].remove(vybaveniId)
+    except:
+        print("Nebylo nikdy půjčeno")
 
 def statistika(seznamVybaveni, seznamZakazniku):
     dostupne = 0
@@ -110,6 +116,9 @@ while 1:
         elif (n == 5):
             pujceniVybaveni(seznamVybaveni, seznamZakazniku)
         elif (n == 6):
-            vraceniVybaveni(seznamVybaveni, seznamZakazniku)
+            if (len(seznamVybaveni) > 0 and len(seznamZakazniku) > 0):
+                vraceniVybaveni(seznamVybaveni, seznamZakazniku)
+            else:
+                print("Nemá si kdo co půjčovat")
         elif (n == 7):
             statistika(seznamVybaveni, seznamZakazniku)
